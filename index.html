@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Audio: Gaza Aid Worker Airstrike</title>
+  <title>Gaza Audio News Scripts</title>
   <style>
     body { font-family: sans-serif; padding: 2rem; line-height: 1.6; }
     .status { margin-top: 1rem; font-size: 1.2rem; }
@@ -29,21 +29,26 @@
       margin-top: 0.5rem;
       white-space: pre-wrap;
     }
+    .block {
+      margin-bottom: 3rem;
+    }
   </style>
 </head>
 <body>
 
-  <h1>March 15, 2025 – Gaza: Israeli Airstrike Kills Aid Workers</h1>
+  <!-- ===== Block 1 ===== -->
+  <div class="block">
+    <h1>March 15, 2025 – Gaza: Israeli Airstrike Kills Aid Workers</h1>
 
-  <audio id="audioPlayer" controls>
-    <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
+    <audio id="audio1" controls>
+      <source src="https://raw.githubusercontent.com/open-hearted/audio/main/March%2015%202025%20-%201800%20UTC%20Gaza%20%20Israeli%20Airstrike%20Kills%20Aid%20Workers.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
 
-  <div class="status" id="statusDisplay">⬜ Not played</div>
+    <div class="status" id="status1">⬜ Not played</div>
 
-  <button class="collapsible">📜 Show Script</button>
-  <div class="content" id="scriptContent">
+    <button class="collapsible">📜 Show Script</button>
+    <div class="content" id="script1">
 The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.
 The charity says at least 8 workers, including volunteers and journalists documenting their work, were killed when their vehicles were targeted Saturday.
 Hamas called it a blatant violation of the ceasefire agreement with Israel.
@@ -52,15 +57,27 @@ The charity denies the allegation, saying its team members were not terrorists.
 The attack comes as US-designated terror group Hamas leaders hold ceasefire talks with mediators in Cairo.
 Hamas says it will only release an American-Israeli hostage and the bodies of four others if Israel fully implements the ceasefire agreement in Gaza.
 A senior Hamas official says talks on the truce's next phase must start immediately and last no more than 50 days.
+    </div>
+  </div>
+
+  <!-- ===== Block 2 ===== -->
+  <div class="block">
+    <h1>Additional Segment – Al Khair Foundation Statement</h1>
+
+    <audio id="audio2" controls>
+      <source src="https://raw.githubusercontent.com/open-hearted/audio/main/The%20UK-based%20Al%20Khair%20Foundation%20said%20a%20team%20of%20charity%20workers%20has%20been%20killed%20in%20Israeli%20airstrikes%20in%20northern%20Gaza.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+    <div class="status" id="status2">⬜ Not played</div>
+
+    <button class="collapsible">📜 Show Script</button>
+    <div class="content" id="script2">
+The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.
+    </div>
   </div>
 
   <script>
-    const audio = document.getElementById('audioPlayer');
-    const statusDisplay = document.getElementById('statusDisplay');
-    const collapsible = document.querySelector(".collapsible");
-    const content = document.getElementById("scriptContent");
-    const storageKey = 'audioPlayed_v5';
-
     function getFormattedDateTime() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -71,27 +88,34 @@ A senior Hamas official says talks on the truce's next phase must start immediat
       return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
     }
 
-    // 初期表示
-    const stored = localStorage.getItem(storageKey);
-    if (stored) {
-      const data = JSON.parse(stored);
-      statusDisplay.textContent = `✅ Played (${data.timestamp})`;
+    function setupBlock(audioId, statusId, storageKey) {
+      const audio = document.getElementById(audioId);
+      const status = document.getElementById(statusId);
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const data = JSON.parse(stored);
+        status.textContent = `✅ Played (${data.timestamp})`;
+      }
+
+      audio.addEventListener('ended', () => {
+        const timestamp = getFormattedDateTime();
+        localStorage.setItem(storageKey, JSON.stringify({ played: true, timestamp }));
+        status.textContent = `✅ Played (${timestamp})`;
+      });
     }
 
-    // 再生完了時の処理
-    audio.addEventListener('ended', () => {
-      const timestamp = getFormattedDateTime();
-      localStorage.setItem(storageKey, JSON.stringify({
-        played: true,
-        timestamp: timestamp
-      }));
-      statusDisplay.textContent = `✅ Played (${timestamp})`;
-    });
+    // Set up each block
+    setupBlock("audio1", "status1", "audioPlayed_v5");
+    setupBlock("audio2", "status2", "audioPlayed_v6");
 
-    // 折りたたみ切替
-    collapsible.addEventListener("click", function () {
-      this.classList.toggle("active");
-      content.style.display = content.style.display === "block" ? "none" : "block";
+    // Collapsibles
+    const collapsibles = document.querySelectorAll(".collapsible");
+    collapsibles.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        this.classList.toggle("active");
+        const content = this.nextElementSibling;
+        content.style.display = (content.style.display === "block") ? "none" : "block";
+      });
     });
   </script>
 
