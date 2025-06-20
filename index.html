@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Gaza Audio News Scripts</title>
+  <title>Gaza Audio Sentence Tracker</title>
   <style>
     body { font-family: sans-serif; padding: 2rem; line-height: 1.6; }
-    .status { margin-top: 1rem; font-size: 1.2rem; }
+    .status { margin-top: 0.5rem; font-size: 1.2rem; }
     .collapsible {
       background-color: #eee;
       cursor: pointer;
@@ -14,39 +14,34 @@
       text-align: left;
       outline: none;
       font-size: 1rem;
-      margin-top: 2rem;
+      margin-top: 1rem;
       width: 100%;
     }
     .active, .collapsible:hover {
       background-color: #ccc;
     }
     .content {
-      padding: 1rem 1rem;
+      padding: 1rem;
       display: none;
       overflow: hidden;
       background-color: #f9f9f9;
       border: 1px solid #ccc;
-      margin-top: 0.5rem;
       white-space: pre-wrap;
     }
     .block {
-      margin-bottom: 3rem;
+      margin-bottom: 2.5rem;
     }
   </style>
 </head>
 <body>
 
-  <!-- ===== Block 1 ===== -->
+  <!-- Full news block (Block 1) -->
   <div class="block">
     <h1>March 15, 2025 – Gaza: Israeli Airstrike Kills Aid Workers</h1>
-
     <audio id="audio1" controls>
       <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers/March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
     </audio>
-
     <div class="status" id="status1">⬜ Not played</div>
-
     <button class="collapsible">📜 Show Script</button>
     <div class="content" id="script1">
 The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.
@@ -60,23 +55,42 @@ A senior Hamas official says talks on the truce's next phase must start immediat
     </div>
   </div>
 
-  <!-- ===== Block 2 ===== -->
+  <!-- Sentence blocks (2–8) -->
+  <script>
+    const sentences = [
+      "The charity says at least 8 workers, including volunteers and journalists documenting their work, were killed when their vehicles were targeted Saturday.",
+      "Hamas called it a blatant violation of the ceasefire agreement with Israel.",
+      "The Israeli military said it struck two terrorists operating a drone that posed a threat to Israeli troops and later targeted additional terrorists at the scene.",
+      "The charity denies the allegation, saying its team members were not terrorists.",
+      "The attack comes as US-designated terror group Hamas leaders hold ceasefire talks with mediators in Cairo.",
+      "Hamas says it will only release an American-Israeli hostage and the bodies of four others if Israel fully implements the ceasefire agreement in Gaza.",
+      "A senior Hamas official says talks on the truce's next phase must start immediately and last no more than 50 days."
+    ];
+
+    let html = "";
+    for (let i = 0; i < sentences.length; i++) {
+      const n = i + 2;
+      const id = `audio${n}`;
+      const statusId = `status${n}`;
+      const scriptId = `script${n}`;
+      const storageKey = `audioPlayed_v${n + 4}`;
+      html += `
   <div class="block">
-    <h2>Sentence 1/8</h2>
-
-    <audio id="audio2" controls>
-      <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers/01 The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
+    <h2>Sentence ${n}/8</h2>
+    <audio id="${id}" controls>
+      <source src="March 15 2025 - 1800 UTC Gaza Israeli Airstrike Kills Aid Workers/${n}.mp3" type="audio/mpeg">
     </audio>
-
-    <div class="status" id="status2">⬜ Not played</div>
-
+    <div class="status" id="${statusId}">⬜ Not played</div>
     <button class="collapsible">📜 Show Script</button>
-    <div class="content" id="script2">
-The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.
+    <div class="content" id="${scriptId}">
+${sentences[i]}
     </div>
-  </div>
+  </div>`;
+    }
+    document.write(html);
+  </script>
 
+  <!-- JS Logic -->
   <script>
     function getFormattedDateTime() {
       const now = new Date();
@@ -104,17 +118,18 @@ The UK-based Al Khair Foundation said a team of charity workers has been killed 
       });
     }
 
-    // Set up each block
+    // Setup all blocks (1~8)
     setupBlock("audio1", "status1", "audioPlayed_v5");
-    setupBlock("audio2", "status2", "audioPlayed_v6");
+    for (let i = 2; i <= 8; i++) {
+      setupBlock(`audio${i}`, `status${i}`, `audioPlayed_v${i + 4}`);
+    }
 
     // Collapsibles
-    const collapsibles = document.querySelectorAll(".collapsible");
-    collapsibles.forEach((btn) => {
+    document.querySelectorAll(".collapsible").forEach((btn) => {
       btn.addEventListener("click", function () {
         this.classList.toggle("active");
         const content = this.nextElementSibling;
-        content.style.display = (content.style.display === "block") ? "none" : "block";
+        content.style.display = content.style.display === "block" ? "none" : "block";
       });
     });
   </script>
