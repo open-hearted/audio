@@ -3,47 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <title>Gaza Audio Sentence Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: sans-serif; padding: 2rem; line-height: 1.6; }
-    .status { margin-top: 0.5rem; font-size: 1.2rem; }
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      line-height: 1.6;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1, h2 {
+      font-size: 1.2rem;
+    }
+    .status {
+      margin-top: 0.3rem;
+      font-size: 1rem;
+    }
     .collapsible {
       background-color: #eee;
       cursor: pointer;
       padding: 10px;
       border: none;
       text-align: left;
-      outline: none;
       font-size: 1rem;
-      margin-top: 1rem;
+      margin-top: 0.8rem;
       width: 100%;
+      border-radius: 5px;
     }
     .active, .collapsible:hover {
       background-color: #ccc;
     }
     .content {
-      padding: 1rem;
+      padding: 0.8rem;
       display: none;
       overflow: hidden;
       background-color: #f9f9f9;
       border: 1px solid #ccc;
       white-space: pre-wrap;
+      border-radius: 5px;
     }
     .block {
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
+    }
+    audio {
+      width: 100%;
     }
   </style>
 </head>
 <body>
 
-  <!-- Full news block (Block 0) -->
   <div class="block">
     <h1>March 15, 2025 – Gaza: Israeli Airstrike Kills Aid Workers</h1>
-    <audio id="audio0" controls>
-      <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers/March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers.mp3" type="audio/mpeg">
+    <audio id="audio1" controls>
+      <source src="March%2015%202025%20-%201800%20UTC%20Gaza%20%20Israeli%20Airstrike%20Kills%20Aid%20Workers/March%2015%202025%20-%201800%20UTC%20Gaza%20%20Israeli%20Airstrike%20Kills%20Aid%20Workers.mp3" type="audio/mpeg">
     </audio>
-    <div class="status" id="status0">⬜ Not played</div>
+    <div class="status" id="status1">⬜ Not played</div>
     <button class="collapsible">📜 Show Script</button>
-    <div class="content" id="script0">
+    <div class="content" id="script1">
 The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.
 The charity says at least 8 workers, including volunteers and journalists documenting their work, were killed when their vehicles were targeted Saturday.
 Hamas called it a blatant violation of the ceasefire agreement with Israel.
@@ -55,7 +71,6 @@ A senior Hamas official says talks on the truce's next phase must start immediat
     </div>
   </div>
 
-  <!-- Sentence blocks (1–8) -->
   <script>
     const sentences = [
       "The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.",
@@ -68,31 +83,6 @@ A senior Hamas official says talks on the truce's next phase must start immediat
       "A senior Hamas official says talks on the truce's next phase must start immediately and last no more than 50 days."
     ];
 
-    let html = "";
-    for (let i = 0; i < sentences.length; i++) {
-      const n = i + 1;
-      const audioId = `audioSentence${n}`;
-      const statusId = `statusSentence${n}`;
-      const scriptId = `scriptSentence${n}`;
-      const storageKey = `audioPlayed_sentence${n}`;
-      html += `
-  <div class="block">
-    <h2>Sentence ${n}/8</h2>
-    <audio id="${audioId}" controls>
-      <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers/${n}.mp3" type="audio/mpeg">
-    </audio>
-    <div class="status" id="${statusId}">⬜ Not played</div>
-    <button class="collapsible">📜 Show Script</button>
-    <div class="content" id="${scriptId}">
-${sentences[i]}
-    </div>
-  </div>`;
-    }
-    document.write(html);
-  </script>
-
-  <!-- JS Logic -->
-  <script>
     function getFormattedDateTime() {
       const now = new Date();
       const yyyy = now.getFullYear();
@@ -119,21 +109,39 @@ ${sentences[i]}
       });
     }
 
-    // Setup full block
-    setupBlock("audio0", "status0", "audioPlayed_full");
+    // Block 1 setup
+    setupBlock("audio1", "status1", "audioPlayed_v1");
 
-    // Setup sentence blocks
-    for (let i = 1; i <= 8; i++) {
-      setupBlock(`audioSentence${i}`, `statusSentence${i}`, `audioPlayed_sentence${i}`);
+    // Sentence 1–8 blocks
+    const container = document.createElement('div');
+    for (let i = 0; i < sentences.length; i++) {
+      const num = i + 1;
+      const audioId = `audio${num + 1}`;
+      const statusId = `status${num + 1}`;
+      const scriptId = `script${num + 1}`;
+      const storageKey = `audioPlayed_v${num + 1}`;
+      const block = document.createElement('div');
+      block.className = 'block';
+      block.innerHTML = `
+        <h2>Sentence ${num}/8</h2>
+        <audio id="${audioId}" controls>
+          <source src="March%2015%202025%20-%201800%20UTC%20Gaza%20%20Israeli%20Airstrike%20Kills%20Aid%20Workers/${num}.mp3" type="audio/mpeg">
+        </audio>
+        <div class="status" id="${statusId}">⬜ Not played</div>
+        <button class="collapsible">📜 Show Script</button>
+        <div class="content" id="${scriptId}">${sentences[i]}</div>
+      `;
+      document.body.appendChild(block);
+      setTimeout(() => setupBlock(audioId, statusId, storageKey), 0);
     }
 
-    // Collapsibles
-    document.querySelectorAll(".collapsible").forEach((btn) => {
-      btn.addEventListener("click", function () {
-        this.classList.toggle("active");
-        const content = this.nextElementSibling;
+    // Collapsible logic
+    document.addEventListener("click", function (e) {
+      if (e.target && e.target.classList.contains("collapsible")) {
+        e.target.classList.toggle("active");
+        const content = e.target.nextElementSibling;
         content.style.display = content.style.display === "block" ? "none" : "block";
-      });
+      }
     });
   </script>
 
