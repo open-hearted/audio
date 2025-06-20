@@ -35,15 +35,15 @@
 </head>
 <body>
 
-  <!-- Full news block (Block 1) -->
+  <!-- Full news block (Block 0) -->
   <div class="block">
     <h1>March 15, 2025 – Gaza: Israeli Airstrike Kills Aid Workers</h1>
-    <audio id="audio1" controls>
+    <audio id="audio0" controls>
       <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers/March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers.mp3" type="audio/mpeg">
     </audio>
-    <div class="status" id="status1">⬜ Not played</div>
+    <div class="status" id="status0">⬜ Not played</div>
     <button class="collapsible">📜 Show Script</button>
-    <div class="content" id="script1">
+    <div class="content" id="script0">
 The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.
 The charity says at least 8 workers, including volunteers and journalists documenting their work, were killed when their vehicles were targeted Saturday.
 Hamas called it a blatant violation of the ceasefire agreement with Israel.
@@ -70,15 +70,15 @@ A senior Hamas official says talks on the truce's next phase must start immediat
 
     let html = "";
     for (let i = 0; i < sentences.length; i++) {
-      const n = i + 2;
-      const id = `audio${n}`;
-      const statusId = `status${n}`;
-      const scriptId = `script${n}`;
-      const storageKey = `audioPlayed_v${n + 4}`;
+      const n = i + 1;
+      const audioId = `audioSentence${n}`;
+      const statusId = `statusSentence${n}`;
+      const scriptId = `scriptSentence${n}`;
+      const storageKey = `audioPlayed_sentence${n}`;
       html += `
   <div class="block">
     <h2>Sentence ${n}/8</h2>
-    <audio id="${id}" controls>
+    <audio id="${audioId}" controls>
       <source src="March 15 2025 - 1800 UTC Gaza Israeli Airstrike Kills Aid Workers/${n}.mp3" type="audio/mpeg">
     </audio>
     <div class="status" id="${statusId}">⬜ Not played</div>
@@ -119,10 +119,12 @@ ${sentences[i]}
       });
     }
 
-    // Setup all blocks (1~8)
-    setupBlock("audio1", "status1", "audioPlayed_v5");
+    // Setup full block
+    setupBlock("audio0", "status0", "audioPlayed_full");
+
+    // Setup sentence blocks
     for (let i = 1; i <= 8; i++) {
-      setupBlock(`audio${i}`, `status${i}`, `audioPlayed_v${i + 4}`);
+      setupBlock(`audioSentence${i}`, `statusSentence${i}`, `audioPlayed_sentence${i}`);
     }
 
     // Collapsibles
