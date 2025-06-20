@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Audio Check</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+    }
+    .status {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Audio Check</h1>
+  <audio id="audioPlayer" controls>
+    <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <div class="status" id="statusDisplay">⬜ Not played</div>
+
+  <script>
+    const audio = document.getElementById('audioPlayer');
+    const statusDisplay = document.getElementById('statusDisplay');
+    const storageKey = 'audioPlayed_v1';  // 複数ファイル対応したい場合はキーを変えて
+
+    // 初期表示
+    if (localStorage.getItem(storageKey) === 'true') {
+      statusDisplay.textContent = '✅ Played';
+    }
+
+    // 再生完了時に記録
+    audio.addEventListener('ended', () => {
+      localStorage.setItem(storageKey, 'true');
+      statusDisplay.textContent = '✅ Played';
+    });
+  </script>
+</body>
+</html>
