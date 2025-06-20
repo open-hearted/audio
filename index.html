@@ -2,42 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Audio Check</title>
+  <title>SPA Style Audio Step</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 2rem;
-    }
-    .status {
-      margin-top: 1rem;
-      font-size: 1.2rem;
-    }
+    body { font-family: sans-serif; padding: 2rem; }
+    .hidden { display: none; }
+    .section { margin-top: 2rem; }
+    .status { font-size: 1.2rem; margin-top: 1rem; }
+    .folded-content { border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; background: #f9f9f9; }
   </style>
 </head>
 <body>
-  <h1>Audio Check</h1>
+
+  <h1>Step 1: Listen to the Audio</h1>
+
   <audio id="audioPlayer" controls>
     <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
-  <div class="status" id="statusDisplay">⬜ Not played</div>
+  <div id="status" class="status">⬜ Not played</div>
+
+  <button id="showNextBtn" class="hidden section">▶ Show Next Step</button>
+
+  <div id="nextSection" class="hidden section">
+    <h2>Step 2: Follow-Up Script</h2>
+    <div class="folded-content">
+      <p>This is the next step's content, shown only after completing the audio check.</p>
+      <pre><code>
+// Example JavaScript:
+console.log("Step 2 executed after audio played.");
+      </code></pre>
+    </div>
+  </div>
 
   <script>
     const audio = document.getElementById('audioPlayer');
-    const statusDisplay = document.getElementById('statusDisplay');
-    const storageKey = 'audioPlayed_v1';  // 複数ファイル対応したい場合はキーを変えて
+    const status = document.getElementById('status');
+    const showNextBtn = document.getElementById('showNextBtn');
+    const nextSection = document.getElementById('nextSection');
+    const storageKey = 'audioPlayed_v2';
 
-    // 初期表示
+    // 初期表示：再生済なら次ボタンも出す
     if (localStorage.getItem(storageKey) === 'true') {
-      statusDisplay.textContent = '✅ Played';
+      status.textContent = '✅ Played';
+      showNextBtn.classList.remove('hidden');
     }
 
-    // 再生完了時に記録
+    // 再生完了でチェックマークとボタン表示
     audio.addEventListener('ended', () => {
       localStorage.setItem(storageKey, 'true');
-      statusDisplay.textContent = '✅ Played';
+      status.textContent = '✅ Played';
+      showNextBtn.classList.remove('hidden');
+    });
+
+    // 「次へ」ボタンで次のセクション表示
+    showNextBtn.addEventListener('click', () => {
+      nextSection.classList.remove('hidden');
+      showNextBtn.classList.add('hidden');
     });
   </script>
+
 </body>
 </html>
