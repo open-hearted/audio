@@ -2,70 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>SPA Style Audio Step</title>
+  <title>Audio: Gaza Aid Worker Airstrike</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; }
-    .hidden { display: none; }
-    .section { margin-top: 2rem; }
-    .status { font-size: 1.2rem; margin-top: 1rem; }
-    .folded-content { border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; background: #f9f9f9; }
+    body { font-family: sans-serif; padding: 2rem; line-height: 1.6; }
+    .status { margin-top: 1rem; font-size: 1.2rem; }
+    .collapsible {
+      background-color: #eee;
+      cursor: pointer;
+      padding: 10px;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 1rem;
+      margin-top: 2rem;
+      width: 100%;
+    }
+    .active, .collapsible:hover {
+      background-color: #ccc;
+    }
+    .content {
+      padding: 1rem 1rem;
+      display: none;
+      overflow: hidden;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      margin-top: 0.5rem;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Step 1: Listen to the Audio</h1>
+  <h1>March 15, 2025 – Gaza: Israeli Airstrike Kills Aid Workers</h1>
 
   <audio id="audioPlayer" controls>
-    <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers.mp3" type="audio/mpeg">
+    <source src="https://raw.githubusercontent.com/USERNAME/REPO/main/March%2015%202025%20-%201800%20UTC%20Gaza%20%20Israeli%20Airstrike%20Kills%20Aid%20Workers.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
-  <div id="status" class="status">⬜ Not played</div>
+  <div class="status" id="statusDisplay">⬜ Not played</div>
 
-  <button id="showNextBtn" class="hidden section">▶ Show Next Step</button>
-
-  <div id="nextSection" class="hidden section">
-    <h2>Step 2: Follow-Up Script</h2>
-    <div class="folded-content">
-      <p>The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.
+  <button class="collapsible">📜 Show Script</button>
+  <div class="content" id="scriptContent">
+The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.
 The charity says at least 8 workers, including volunteers and journalists documenting their work, were killed when their vehicles were targeted Saturday.
 Hamas called it a blatant violation of the ceasefire agreement with Israel.
 The Israeli military said it struck two terrorists operating a drone that posed a threat to Israeli troops and later targeted additional terrorists at the scene.
 The charity denies the allegation, saying its team members were not terrorists.
 The attack comes as US-designated terror group Hamas leaders hold ceasefire talks with mediators in Cairo.
 Hamas says it will only release an American-Israeli hostage and the bodies of four others if Israel fully implements the ceasefire agreement in Gaza.
-A senior Hamas official says talks on the truce's next phase must start immediately and last no more than 50 days.</p>
-<!--       <pre><code>
-// Example JavaScript:
-console.log("Step 2 executed after audio played.");
-      </code></pre> -->
-    </div>
+A senior Hamas official says talks on the truce's next phase must start immediately and last no more than 50 days.
   </div>
 
   <script>
     const audio = document.getElementById('audioPlayer');
-    const status = document.getElementById('status');
-    const showNextBtn = document.getElementById('showNextBtn');
-    const nextSection = document.getElementById('nextSection');
-    const storageKey = 'audioPlayed_v2';
+    const statusDisplay = document.getElementById('statusDisplay');
+    const collapsible = document.querySelector(".collapsible");
+    const content = document.getElementById("scriptContent");
+    const storageKey = 'audioPlayed_v5';
 
-    // 初期表示：再生済なら次ボタンも出す
-    if (localStorage.getItem(storageKey) === 'true') {
-      status.textContent = '✅ Played';
-      showNextBtn.classList.remove('hidden');
+    function getFormattedDateTime() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
     }
 
-    // 再生完了でチェックマークとボタン表示
+    // 初期表示
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      const data = JSON.parse(stored);
+      statusDisplay.textContent = `✅ Played (${data.timestamp})`;
+    }
+
+    // 再生完了時の処理
     audio.addEventListener('ended', () => {
-      localStorage.setItem(storageKey, 'true');
-      status.textContent = '✅ Played';
-      showNextBtn.classList.remove('hidden');
+      const timestamp = getFormattedDateTime();
+      localStorage.setItem(storageKey, JSON.stringify({
+        played: true,
+        timestamp: timestamp
+      }));
+      statusDisplay.textContent = `✅ Played (${timestamp})`;
     });
 
-    // 「次へ」ボタンで次のセクション表示
-    showNextBtn.addEventListener('click', () => {
-      nextSection.classList.remove('hidden');
-      showNextBtn.classList.add('hidden');
+    // 折りたたみ切替
+    collapsible.addEventListener("click", function () {
+      this.classList.toggle("active");
+      content.style.display = content.style.display === "block" ? "none" : "block";
     });
   </script>
 
