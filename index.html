@@ -71,54 +71,32 @@
 <body>
 
 <script>
-const blocks = [
-  {
-    sentence: "The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.",
-    file: "1.mp3"
-  },
-  {
-    sentence: "The charity says at least 8 workers, including volunteers and journalists documenting their work, were killed when their vehicles were targeted Saturday.",
-    file: "2.mp3"
-  },
-  {
-    sentence: "Hamas called it a blatant violation of the ceasefire agreement with Israel.",
-    file: "3.mp3"
-  },
-  {
-    sentence: "The Israeli military said it struck two terrorists operating a drone that posed a threat to Israeli troops and later targeted additional terrorists at the scene.",
-    file: "4.mp3"
-  },
-  {
-    sentence: "The charity denies the allegation, saying its team members were not terrorists.",
-    file: "5.mp3"
-  },
-  {
-    sentence: "The attack comes as US-designated terror group Hamas leaders hold ceasefire talks with mediators in Cairo.",
-    file: "6.mp3"
-  },
-  {
-    sentence: "Hamas says it will only release an American-Israeli hostage and the bodies of four others if Israel fully implements the ceasefire agreement in Gaza.",
-    file: "7.mp3"
-  },
-  {
-    sentence: "A senior Hamas official says talks on the truce's next phase must start immediately and last no more than 50 days.",
-    file: "8.mp3"
-  }
+const basePath = "March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers/";
+const sentences = [
+  "The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.",
+  "The charity says at least 8 workers, including volunteers and journalists documenting their work, were killed when their vehicles were targeted Saturday.",
+  "Hamas called it a blatant violation of the ceasefire agreement with Israel.",
+  "The Israeli military said it struck two terrorists operating a drone that posed a threat to Israeli troops and later targeted additional terrorists at the scene.",
+  "The charity denies the allegation, saying its team members were not terrorists.",
+  "The attack comes as US-designated terror group Hamas leaders hold ceasefire talks with mediators in Cairo.",
+  "Hamas says it will only release an American-Israeli hostage and the bodies of four others if Israel fully implements the ceasefire agreement in Gaza.",
+  "A senior Hamas official says talks on the truce's next phase must start immediately and last no more than 50 days."
 ];
 
 function renderBlocks() {
-  blocks.forEach((item, index) => {
+  sentences.forEach((sentence, i) => {
+    const index = i + 1;
     const block = document.createElement("div");
     block.className = "block";
 
     block.innerHTML = `
-      <h2>Sentence ${index + 1}/8</h2>
+      <h2>Sentence ${index}/8</h2>
       <audio id="audio${index}" controls>
-        <source src="${item.file}" type="audio/mpeg">
+        <source src="${basePath}${index}.mp3" type="audio/mpeg">
       </audio>
       <div class="status" id="status${index}">⬜ Not played</div>
       <button class="collapsible">📜 Show Sentence</button>
-      <div class="content" id="script${index}">${item.sentence}</div>
+      <div class="content" id="script${index}">${sentence}</div>
       <div class="quiz" id="quiz${index}">
         <strong>Where is this news taking place?</strong>
         <button onclick="checkAnswer(this, true)">Gaza</button>
@@ -126,11 +104,13 @@ function renderBlocks() {
         <button onclick="checkAnswer(this, false)">Tehran</button>
       </div>
     `;
+
     document.body.appendChild(block);
 
+    // LocalStorage + 再生後ステータス更新
     const audio = block.querySelector("audio");
     const status = block.querySelector(".status");
-    const storageKey = `played_quiz_${index}`;
+    const storageKey = `played_gaza_${index}`;
     const stored = localStorage.getItem(storageKey);
     if (stored) {
       const data = JSON.parse(stored);
@@ -144,6 +124,7 @@ function renderBlocks() {
       localStorage.setItem(storageKey, JSON.stringify({ timestamp: t }));
     });
 
+    // 折り畳みスクリプト
     const coll = block.querySelector(".collapsible");
     const content = block.querySelector(".content");
     coll.addEventListener("click", () => {
