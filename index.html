@@ -1,81 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Listening Drill with Quiz</title>
+  <meta charset="UTF-8">
+  <title>Gaza Listening Drill with Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: sans-serif; padding: 1.5rem; line-height: 1.6; background: #f4f4f4; }
-    .block { background: #fff; border: 1px solid #ccc; padding: 1rem; margin-bottom: 2rem; border-radius: 10px; }
-    h2 { margin-top: 0; }
-    .status { font-weight: bold; margin: 0.5rem 0; }
-    .collapsible { cursor: pointer; background: #eee; border: none; padding: 0.5rem; width: 100%; text-align: left; }
-    .content { display: none; background: #f9f9f9; padding: 0.5rem; margin-top: 0.5rem; border-radius: 6px; white-space: pre-wrap; }
-    .quiz { margin-top: 1rem; }
-    .quiz button { margin: 0.25rem; }
-    .quiz-result { margin-top: 0.5rem; font-weight: bold; }
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      line-height: 1.6;
+      background: #f4f4f4;
+    }
+    .block {
+      background: white;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 0;
+    }
+    .status {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+    }
+    .collapsible {
+      background-color: #eee;
+      cursor: pointer;
+      padding: 0.5rem;
+      border: none;
+      text-align: left;
+      font-size: 1rem;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .active, .collapsible:hover {
+      background-color: #ccc;
+    }
+    .content {
+      padding: 0.5rem 1rem;
+      display: none;
+      overflow: hidden;
+      background-color: #f9f9f9;
+      border-left: 3px solid #999;
+      margin-top: 0.5rem;
+    }
+    .quiz {
+      margin-top: 1rem;
+    }
+    .quiz button {
+      display: block;
+      width: 100%;
+      margin: 0.3rem 0;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fafafa;
+      cursor: pointer;
+    }
+    .quiz button.correct {
+      background-color: #c8f7c5;
+    }
+    .quiz button.wrong {
+      background-color: #f7c5c5;
+    }
   </style>
 </head>
 <body>
 
-<div class="block">
-  <h2>Sentence 1/8</h2>
-  <audio id="audio1" controls>
-    <source src="March 15 2025 - 1800 UTC Gaza  Israeli Airstrike Kills Aid Workers/1.mp3" type="audio/mpeg">
-  </audio>
-  <div class="status" id="status1">⬜ Not played</div>
-  <button class="collapsible">📜 Show Script</button>
-  <div class="content">
-The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.
-  </div>
-
-  <!-- 🎯 Quiz -->
-  <div class="quiz">
-    <p>📍 Where did the airstrike occur?</p>
-    <button onclick="checkAnswer(this, 'correct')">Gaza</button>
-    <button onclick="checkAnswer(this, 'wrong')">Beirut</button>
-    <button onclick="checkAnswer(this, 'wrong')">Tehran</button>
-    <div class="quiz-result"></div>
-  </div>
-</div>
-
 <script>
-  // LocalStorage check
-  function getFormattedDateTime() {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+const blocks = [
+  {
+    sentence: "The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.",
+    file: "1.mp3"
+  },
+  {
+    sentence: "The charity says at least 8 workers, including volunteers and journalists documenting their work, were killed when their vehicles were targeted Saturday.",
+    file: "2.mp3"
+  },
+  {
+    sentence: "Hamas called it a blatant violation of the ceasefire agreement with Israel.",
+    file: "3.mp3"
+  },
+  {
+    sentence: "The Israeli military said it struck two terrorists operating a drone that posed a threat to Israeli troops and later targeted additional terrorists at the scene.",
+    file: "4.mp3"
+  },
+  {
+    sentence: "The charity denies the allegation, saying its team members were not terrorists.",
+    file: "5.mp3"
+  },
+  {
+    sentence: "The attack comes as US-designated terror group Hamas leaders hold ceasefire talks with mediators in Cairo.",
+    file: "6.mp3"
+  },
+  {
+    sentence: "Hamas says it will only release an American-Israeli hostage and the bodies of four others if Israel fully implements the ceasefire agreement in Gaza.",
+    file: "7.mp3"
+  },
+  {
+    sentence: "A senior Hamas official says talks on the truce's next phase must start immediately and last no more than 50 days.",
+    file: "8.mp3"
   }
+];
 
-  const audio = document.getElementById("audio1");
-  const status = document.getElementById("status1");
-  const saved = localStorage.getItem("played_s1");
-  if (saved) {
-    status.textContent = `✅ Played (${JSON.parse(saved).timestamp})`;
-  }
-  audio.addEventListener("ended", () => {
-    const time = getFormattedDateTime();
-    localStorage.setItem("played_s1", JSON.stringify({ timestamp: time }));
-    status.textContent = `✅ Played (${time})`;
-  });
+function renderBlocks() {
+  blocks.forEach((item, index) => {
+    const block = document.createElement("div");
+    block.className = "block";
 
-  // Collapsible
-  document.querySelector(".collapsible").addEventListener("click", function() {
-    this.classList.toggle("active");
-    const content = this.nextElementSibling;
-    content.style.display = (content.style.display === "block") ? "none" : "block";
-  });
+    block.innerHTML = `
+      <h2>Sentence ${index + 1}/8</h2>
+      <audio id="audio${index}" controls>
+        <source src="${item.file}" type="audio/mpeg">
+      </audio>
+      <div class="status" id="status${index}">⬜ Not played</div>
+      <button class="collapsible">📜 Show Sentence</button>
+      <div class="content" id="script${index}">${item.sentence}</div>
+      <div class="quiz" id="quiz${index}">
+        <strong>Where is this news taking place?</strong>
+        <button onclick="checkAnswer(this, true)">Gaza</button>
+        <button onclick="checkAnswer(this, false)">Beirut</button>
+        <button onclick="checkAnswer(this, false)">Tehran</button>
+      </div>
+    `;
+    document.body.appendChild(block);
 
-  // Quiz answer check
-  function checkAnswer(btn, result) {
-    const resultDiv = btn.parentElement.querySelector(".quiz-result");
-    if (result === "correct") {
-      resultDiv.textContent = "✅ Correct!";
-      resultDiv.style.color = "green";
-    } else {
-      resultDiv.textContent = "❌ Incorrect. Try again.";
-      resultDiv.style.color = "red";
+    const audio = block.querySelector("audio");
+    const status = block.querySelector(".status");
+    const storageKey = `played_quiz_${index}`;
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      const data = JSON.parse(stored);
+      status.textContent = `✅ Played (${data.timestamp})`;
     }
+
+    audio.addEventListener("ended", () => {
+      const now = new Date();
+      const t = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      status.textContent = `✅ Played (${t})`;
+      localStorage.setItem(storageKey, JSON.stringify({ timestamp: t }));
+    });
+
+    const coll = block.querySelector(".collapsible");
+    const content = block.querySelector(".content");
+    coll.addEventListener("click", () => {
+      coll.classList.toggle("active");
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    });
+  });
+}
+
+function checkAnswer(btn, isCorrect) {
+  if (isCorrect) {
+    btn.classList.add("correct");
+    btn.textContent += " ✅ Correct!";
+  } else {
+    btn.classList.add("wrong");
+    btn.textContent += " ❌ Try again";
   }
+  const buttons = btn.parentElement.querySelectorAll("button");
+  buttons.forEach(b => b.disabled = true);
+}
+
+window.onload = renderBlocks;
 </script>
 
 </body>
