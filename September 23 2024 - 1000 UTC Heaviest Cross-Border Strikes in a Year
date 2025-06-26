@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>News Audio Sentence Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      background: #f0f2f5;
+      max-width: 700px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    h1, h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    audio {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .status {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+      color: #333;
+    }
+    .collapsible {
+      background-color: #eee;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border: none;
+      font-size: 0.95rem;
+      margin-top: 0.8rem;
+      width: 100%;
+      border-radius: 6px;
+      text-align: left;
+    }
+    .collapsible:hover {
+      background-color: #ddd;
+    }
+    .content {
+      display: none;
+      background-color: #fafafa;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      margin-top: 0.5rem;
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>News Audio Sentence Tracker</h1>
+
+  <script>
+    // ここを変更：音声フォルダ名（URLエンコード不要なので空白を %20 に）
+    const baseFile = "September 23 2024 - 1000 UTC Heaviest Cross-Border Strikes in a Year";
+
+    // ここを変更：最新の文章リスト
+    const sentences = [
+      "Smoke was seen rising on Sunday in southern Lebanon near the border with Israel as audio of missiles exploding were heard.",
+      "Hezbollah has launched over 100 rockets across a wider and deeper area of northern Israel, with some landing near the city of Haifa.",
+      "The sides appeared to be increasing tensions following months of escalating fire.",
+      "Israel and Hezbollah exchanged heavy fire into Sunday with Israeli warplanes.",
+      "Carrying out the most intense bombardment in almost a year of conflict across Lebanon's south and Hezbollah firing rockets deep into northern Israel.",
+      "The Israeli military said it struck around 290 targets on Saturday, including thousands of Hezbollah rocket launcher barrels.",
+      "It would continue to hit more targets.",
+      "That came after an Israeli airstrike in Beirut on Friday that killed at least 37 people, including one of Hezbollah's top leaders, as well as women and children.",
+      "The conflict, which sharply escalated over the past week, has raged since Hezbollah opened a second front against Israel after Israel went to war with Hamas in the Palestinian enclave of Gaza triggered by the Hamas-led rampage into southern Israel on October 7th, 2023."
+    ];
+
+    function getFormattedDateTime() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    }
+
+    function setupBlock(audioId, statusId, storageKey) {
+      const audio = document.getElementById(audioId);
+      const status = document.getElementById(statusId);
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const data = JSON.parse(stored);
+        status.textContent = `✅ Played (${data.timestamp})`;
+      }
+      audio.addEventListener("ended", () => {
+        const timestamp = getFormattedDateTime();
+        localStorage.setItem(storageKey, JSON.stringify({ played: true, timestamp }));
+        status.textContent = `✅ Played (${timestamp})`;
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const container = document.body;
+
+      // 各センテンス
+      sentences.forEach((text, i) => {
+        const num = i + 1;
+        const audioId = `audio${num}`;
+        const statusId = `status${num}`;
+        const storageKey = `audioPlayed_${num}`;
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h2>Sentence ${num}/${sentences.length}</h2>
+          <audio id="${audioId}" controls>
+            <source src="${encodeURIComponent(baseFile)}/${num}.mp3" type="audio/mpeg">
+          </audio>
+          <div class="status" id="${statusId}">⬜ Not played</div>
+          <button class="collapsible">📜 Show Script</button>
+          <div class="content">${text}</div>
+        `;
+        container.appendChild(card);
+        setupBlock(audioId, statusId, storageKey);
+      });
+
+      // フルニュース
+      const fullCard = document.createElement("div");
+      fullCard.className = "card";
+      fullCard.innerHTML = `
+        <h2>Full News Audio</h2>
+        <audio id="audioFull" controls>
+          <source src="${encodeURIComponent(baseFile)}/${encodeURIComponent(baseFile)}.mp3" type="audio/mpeg">
+        </audio>
+        <div class="status" id="statusFull">⬜ Not played</div>
+        <button class="collapsible">📜 Show Full Script</button>
+        <div class="content">${sentences.join('\n')}</div>
+      `;
+      container.appendChild(fullCard);
+      setupBlock("audioFull", "statusFull", "audioPlayed_full");
+
+      // 折りたたみ機能
+      document.querySelectorAll(".collapsible").forEach(btn => {
+        btn.addEventListener("click", function() {
+          this.classList.toggle("active");
+          const content = this.nextElementSibling;
+          content.style.display = content.style.display === "block" ? "none" : "block";
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
