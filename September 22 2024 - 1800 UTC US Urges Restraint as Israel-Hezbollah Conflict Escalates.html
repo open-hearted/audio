@@ -22,7 +22,18 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
     }
 
-    h1, h2 {
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
       font-size: 1.2rem;
       margin-bottom: 0.5rem;
     }
@@ -67,6 +78,9 @@
 </head>
 <body>
 
+<h1>US Urges Restraint as Israel-Hezbollah Conflict Escalates</h1>
+<div class="subtitle">September 22, 2024 - 18:00 UTC</div>
+
 <script>
 const sentences = [
   "Prime Minister Benjamin Netanyahu said in a televised address on Sunday that Israel has in recent days hit Iran backed Hezbollah in Lebanon in ways it could not imagine.",
@@ -76,6 +90,8 @@ const sentences = [
   "White House national security spokesperson John Kirby continued to call for restraint.",
   "The US has warned Israel about opening up a second battlefront with Lebanon after an unprecedented attack on Hezbollah last week in which pagers and radios used by its members exploded, killing dozens and wounding thousands."
 ];
+
+const base = "September%2022%202024%20-%201800%20UTC%20US%20Urges%20Restraint%20as%20Israel-Hezbollah%20Conflict%20Escalates";
 
 function getFormattedDateTime() {
   const now = new Date();
@@ -100,13 +116,12 @@ function setupBlock(audioId, statusId, storageKey) {
 
 window.addEventListener("DOMContentLoaded", () => {
   const container = document.body;
-  const base = "September%2022%202024%20-%201800%20UTC%20US%20Urges%20Restraint%20as%20Israel-Hezbollah%20Conflict%20Escalates";
 
   sentences.forEach((text, i) => {
     const num = i + 1;
     const audioId = `audio${num}`;
     const statusId = `status${num}`;
-    const storageKey = `audioPlayed_${num}`;
+    const storageKey = `audioPlayed_${base}_${num}`;
     const section = document.createElement("div");
     section.className = "card";
     section.innerHTML = `
@@ -135,7 +150,7 @@ window.addEventListener("DOMContentLoaded", () => {
     <div class="content">${sentences.join('\n')}</div>
   `;
   container.appendChild(fullCard);
-  setupBlock("audioFull", "statusFull", "audioPlayed_full");
+  setupBlock("audioFull", "statusFull", `audioPlayed_${base}_full`);
 
   // Collapsible
   document.querySelectorAll(".collapsible").forEach(btn => {
