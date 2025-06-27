@@ -1,0 +1,32 @@
+name: Manual Deploy Static Site
+
+on:
+  workflow_dispatch:  # 手動トリガー
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📄 List HTML files
+        id: list
+        run: |
+          files=$(ls *.html | grep -v '^index\.html$' || true)
+          echo "files=${files}" >> $GITHUB_OUTPUT
+
+      - name: 🛠️ Generate index.html
+        run: |
+          echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Index</title></head><body><h1>Pages</h1><ul>" > index.html
+          for f in ${{ steps.list.outputs.files }}; do
+            echo "<li><a href=\"${f}\">${f}</a></li>" >> index.html
+          done
+          echo "</ul></body></html>" >> index.html
+
+      - name: 🚀 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
