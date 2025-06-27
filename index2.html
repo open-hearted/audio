@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gaza Audio Sentence Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      background: #f0f2f5;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h1, h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    .status {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .collapsible {
+      background-color: #eee;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border: none;
+      font-size: 0.95rem;
+      margin-top: 0.8rem;
+      width: 100%;
+      border-radius: 6px;
+      text-align: left;
+    }
+
+    .collapsible:hover {
+      background-color: #ddd;
+    }
+
+    .content {
+      display: none;
+      background-color: #fafafa;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      margin-top: 0.5rem;
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+    const sentences = [
+      "The UK-based Al Khair Foundation said a team of charity workers has been killed in Israeli airstrikes in northern Gaza.",
+      "The charity says at least 8 workers, including volunteers and journalists documenting their work, were killed when their vehicles were targeted Saturday.",
+      "Hamas called it a blatant violation of the ceasefire agreement with Israel.",
+      "The Israeli military said it struck two terrorists operating a drone that posed a threat to Israeli troops and later targeted additional terrorists at the scene.",
+      "The charity denies the allegation, saying its team members were not terrorists.",
+      "The attack comes as US-designated terror group Hamas leaders hold ceasefire talks with mediators in Cairo.",
+      "Hamas says it will only release an American-Israeli hostage and the bodies of four others if Israel fully implements the ceasefire agreement in Gaza.",
+      "A senior Hamas official says talks on the truce's next phase must start immediately and last no more than 50 days."
+    ];
+
+    function getFormattedDateTime() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function setupBlock(audioId, statusId, storageKey) {
+      const audio = document.getElementById(audioId);
+      const status = document.getElementById(statusId);
+      const stored = localStorage.getItem(storageKey);
+      if (stored) {
+        const data = JSON.parse(stored);
+        status.textContent = `✅ Played (${data.timestamp})`;
+      }
+
+      audio.addEventListener("ended", () => {
+        const timestamp = getFormattedDateTime();
+        localStorage.setItem(storageKey, JSON.stringify({ played: true, timestamp }));
+        status.textContent = `✅ Played (${timestamp})`;
+      });
+    }
+
+    // Render sentence blocks
+    window.addEventListener("DOMContentLoaded", () => {
+      const container = document.body;
+
+      sentences.forEach((text, i) => {
+        const num = i + 1;
+        const audioId = `audio${num}`;
+        const statusId = `status${num}`;
+        const storageKey = `audioPlayed_${num}`;
+        const section = document.createElement("div");
+        section.className = "card";
+        section.innerHTML = `
+          <h2>Sentence ${num}/8</h2>
+          <audio id="${audioId}" controls>
+            <source src="March%2015%202025%20-%201800%20UTC%20Gaza%20%20Israeli%20Airstrike%20Kills%20Aid%20Workers/${num}.mp3" type="audio/mpeg">
+          </audio>
+          <div class="status" id="${statusId}">⬜ Not played</div>
+          <button class="collapsible">📜 Show Script</button>
+          <div class="content">${text}</div>
+        `;
+        container.appendChild(section);
+        setupBlock(audioId, statusId, storageKey);
+      });
+
+      // Add full audio block at the bottom
+      const fullCard = document.createElement("div");
+      fullCard.className = "card";
+      fullCard.innerHTML = `
+        <h2>Full News Audio</h2>
+        <audio id="audioFull" controls>
+          <source src="March%2015%202025%20-%201800%20UTC%20Gaza%20%20Israeli%20Airstrike%20Kills%20Aid%20Workers/March%2015%202025%20-%201800%20UTC%20Gaza%20%20Israeli%20Airstrike%20Kills%20Aid%20Workers.mp3" type="audio/mpeg">
+        </audio>
+        <div class="status" id="statusFull">⬜ Not played</div>
+        <button class="collapsible">📜 Show Script</button>
+        <div class="content">${sentences.join('\n')}</div>
+      `;
+      container.appendChild(fullCard);
+      setupBlock("audioFull", "statusFull", "audioPlayed_full");
+
+      // Collapsible toggles
+      document.querySelectorAll(".collapsible").forEach(btn => {
+        btn.addEventListener("click", function () {
+          this.classList.toggle("active");
+          const content = this.nextElementSibling;
+          content.style.display = content.style.display === "block" ? "none" : "block";
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
