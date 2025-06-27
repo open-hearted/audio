@@ -1,32 +1,37 @@
-name: Manual Deploy Static Site
+name: Manual Update Index Page
 
 on:
-  workflow_dispatch:  # 手動トリガー
+  workflow_dispatch:  # 手動実行トリガー
 
 jobs:
-  deploy:
+  update:
     runs-on: ubuntu-latest
 
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
 
-      - name: 📄 List HTML files
+      - name: 📄 List HTML files (excluding index.html)
         id: list
         run: |
-          files=$(ls *.html | grep -v '^index\.html$' || true)
-          echo "files=${files}" >> $GITHUB_OUTPUT
+          {
+            echo "files<<EOF"
+            ls *.html | grep -v '^index\.html$' || true
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: 🛠️ Generate index.html
+      - name: 🛠️ Generate new index.html
         run: |
-          echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Index</title></head><body><h1>Pages</h1><ul>" > index.html
-          for f in ${{ steps.list.outputs.files }}; do
-            echo "<li><a href=\"${f}\">${f}</a></li>" >> index.html
-          done
+          echo "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Index</title></head><body><h1>Available Pages</h1><ul>" > index.html
+          while IFS= read -r f; do
+            echo "<li><a href=\"$f\">$f</a></li>" >> index.html
+          done <<< "${{ steps.list.outputs.files }}"
           echo "</ul></body></html>" >> index.html
 
-      - name: 🚀 Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+      - name: 📤 Commit and push index.html
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add index.html
+          git commit -m "🔄 Update index.html from GitHub Actions" || echo "No changes"
+          git push
