@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>UN Chief Urges Global Leaders to Modernize Institutions at Summit of the Future</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1rem;
+      background: #f0f2f5;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 1.2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+
+    .status {
+      margin-top: 0.5rem;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .collapsible {
+      background-color: #eee;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border: none;
+      font-size: 0.95rem;
+      margin-top: 0.8rem;
+      width: 100%;
+      border-radius: 6px;
+      text-align: left;
+    }
+
+    .collapsible:hover {
+      background-color: #ddd;
+    }
+
+    .content {
+      display: none;
+      background-color: #fafafa;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      margin-top: 0.5rem;
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<h1>UN Chief Urges Global Leaders to Modernize Institutions at Summit of the Future</h1>
+<div class="subtitle">September 22, 2024 - 18:00 UTC</div>
+
+<script>
+const sentences = [
+  "Facing a swirl of conflicts and crises across a fragmented world, leaders attending this week's annual United Nations gathering are being challenged by UN Secretary General Antonio Guterres working together not only on front burner issues but on modernizing the international institutions born after World War II so they can tackle the threats and problems of the future.",
+  "I called for this summit because 21st century challenges require 21st century solutions, frameworks that are networked and inclusive and that draw on the expertise of all of humanity.",
+  "The two day summit of the future started Sunday ahead of the high-level meeting of world leaders that begins this week at the sprawling UN compound in New York City."
+];
+
+const base = "September%2022%202024%20-%201800%20UTC%20UN%20Chief%20Urges%20Global%20Leaders%20to%20Modernize%20Institutions%20at%20Summit%20of%20the%20Future";
+
+function getFormattedDateTime() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+}
+
+function setupBlock(audioId, statusId, storageKey) {
+  const audio = document.getElementById(audioId);
+  const status = document.getElementById(statusId);
+  const stored = localStorage.getItem(storageKey);
+  if (stored) {
+    const data = JSON.parse(stored);
+    status.textContent = `✅ Played (${data.timestamp})`;
+  }
+
+  audio.addEventListener("ended", () => {
+    const timestamp = getFormattedDateTime();
+    localStorage.setItem(storageKey, JSON.stringify({ played: true, timestamp }));
+    status.textContent = `✅ Played (${timestamp})`;
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const container = document.body;
+
+  sentences.forEach((text, i) => {
+    const num = i + 1;
+    const audioId = `audio${num}`;
+    const statusId = `status${num}`;
+    const storageKey = `audioPlayed_${base}_${num}`;
+    const section = document.createElement("div");
+    section.className = "card";
+    section.innerHTML = `
+      <h2>Sentence ${num}/${sentences.length}</h2>
+      <audio id="${audioId}" controls>
+        <source src="${base}/${num}.mp3" type="audio/mpeg">
+      </audio>
+      <div class="status" id="${statusId}">⬜ Not played</div>
+      <button class="collapsible">📜 Show Script</button>
+      <div class="content">${text}</div>
+    `;
+    container.appendChild(section);
+    setupBlock(audioId, statusId, storageKey);
+  });
+
+  // Full audio
+  const fullCard = document.createElement("div");
+  fullCard.className = "card";
+  fullCard.innerHTML = `
+    <h2>Full News Audio</h2>
+    <audio id="audioFull" controls>
+      <source src="${base}/${base}.mp3" type="audio/mpeg">
+    </audio>
+    <div class="status" id="statusFull">⬜ Not played</div>
+    <button class="collapsible">📜 Show Script</button>
+    <div class="content">${sentences.join('\n')}</div>
+  `;
+  container.appendChild(fullCard);
+  setupBlock("audioFull", "statusFull", `audioPlayed_${base}_full`);
+
+  // Collapsible
+  document.querySelectorAll(".collapsible").forEach(btn => {
+    btn.addEventListener("click", function () {
+      this.classList.toggle("active");
+      const content = this.nextElementSibling;
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    });
+  });
+});
+</script>
+
+</body>
+</html>
